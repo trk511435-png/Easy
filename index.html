@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+<<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Easy - Digital Wallet</title>
+    <title>Easy - Next Gen Wallet</title>
     <style>
         * {
             box-sizing: border-box;
@@ -13,7 +13,7 @@
         }
 
         body {
-            background-color: #0b0b0e;
+            background-color: #070709;
             color: #ffffff;
             display: flex;
             justify-content: center;
@@ -23,12 +23,12 @@
 
         .app-container {
             width: 100%;
-            max-width: 400px;
-            height: 840px;
-            background-color: #121216;
-            border-radius: 40px;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.7);
-            border: 1px solid #27272a;
+            max-width: 410px;
+            height: 860px;
+            background: linear-gradient(180deg, #111116 0%, #09090c 100%);
+            border-radius: 44px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            border: 1px solid #22222b;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -37,7 +37,7 @@
             overflow: hidden;
         }
 
-        /* شريط العلوي للتطبيق */
+        /* الهيدر مع اسم المنصة الواضح */
         .app-header {
             display: flex;
             justify-content: space-between;
@@ -45,9 +45,18 @@
             margin-top: 10px;
         }
 
+        .brand-title {
+            font-size: 24px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffffff 0%, #a1a1aa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+
         .icon-btn {
-            background: #1c1c21;
-            border: 1px solid #2d2d35;
+            background: #18181f;
+            border: 1px solid #2a2a35;
             width: 42px;
             height: 42px;
             border-radius: 50%;
@@ -56,33 +65,51 @@
             align-items: center;
             color: #a1a1aa;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
         }
 
         .icon-btn:hover {
-            background: #2d2d35;
+            background: #2a2a35;
             color: #fff;
         }
 
-        .wallet-selector {
-            font-size: 16px;
-            font-weight: 600;
-            color: #f4f4f5;
+        /* شريط اختيار العملات والشبكات السريع */
+        .assets-bar {
             display: flex;
-            align-items: center;
-            gap: 6px;
-            cursor: pointer;
+            gap: 10px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+            margin-top: 15px;
         }
 
-        /* بطاقة المحفظة الفخمة */
+        .asset-chip {
+            background: #18181f;
+            border: 1px solid #2a2a35;
+            padding: 8px 14px;
+            border-radius: 16px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #a1a1aa;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+
+        .asset-chip.active {
+            background: #ffffff;
+            color: #070709;
+            border-color: #ffffff;
+        }
+
+        /* بطاقة المحفظة الفخمة المتعددة */
         .crypto-card {
-            background: linear-gradient(135deg, #27272f 0%, #161619 100%);
-            border: 1px solid #3f3f46;
-            border-radius: 24px;
+            background: linear-gradient(135deg, #1f1f28 0%, #101015 100%);
+            border: 1px solid #32323f;
+            border-radius: 28px;
             padding: 24px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
             position: relative;
-            margin-top: 10px;
+            margin-top: 5px;
         }
 
         .card-top {
@@ -93,19 +120,24 @@
         }
 
         .card-name {
-            font-size: 15px;
-            color: #a1a1aa;
+            font-size: 14px;
+            color: #8b8b97;
             font-weight: 500;
         }
 
+        .networks-wrapper {
+            display: flex;
+            gap: 6px;
+        }
+
         .network-tag {
-            background: rgba(239, 68, 68, 0.12);
-            color: #f87171;
-            padding: 5px 12px;
+            background: rgba(59, 130, 246, 0.15);
+            color: #60a5fa;
+            padding: 4px 10px;
             border-radius: 20px;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 600;
-            border: 1px solid rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(59, 130, 246, 0.3);
         }
 
         .balance-area {
@@ -115,8 +147,8 @@
         }
 
         .balance-num {
-            font-size: 36px;
-            font-weight: 700;
+            font-size: 38px;
+            font-weight: 800;
             letter-spacing: -1px;
             color: #ffffff;
         }
@@ -127,11 +159,11 @@
             font-weight: 600;
         }
 
-        /* أزرار الإجراءات السريعة (Send / Receive) */
+        /* أزرار الإجراءات الفخمة (Send / Receive) */
         .action-buttons {
             display: flex;
             justify-content: space-around;
-            margin: 20px 0;
+            margin: 15px 0;
         }
 
         .action-group {
@@ -142,25 +174,25 @@
         }
 
         .action-circle {
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(145deg, #1c1c21, #141417);
-            border: 1px solid #2d2d35;
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(145deg, #1c1c24, #121217);
+            border: 1px solid #2e2e3a;
             border-radius: 24px;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 20px;
+            font-size: 22px;
             color: #ffffff;
             cursor: pointer;
-            transition: transform 0.2s, background 0.2s;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            transition: transform 0.2s, background 0.2s, border-color 0.2s;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
         }
 
         .action-circle:hover {
             transform: translateY(-3px);
-            background: #27272f;
-            border-color: #52525b;
+            background: #252530;
+            border-color: #525266;
         }
 
         .action-label {
@@ -169,12 +201,12 @@
             font-weight: 500;
         }
 
-        /* قسم السجل والفراغ */
+        /* قسم السجل */
         .history-box {
             flex-grow: 1;
-            background: #161619;
-            border: 1px dashed #27272a;
-            border-radius: 20px;
+            background: #121217;
+            border: 1px dashed #262630;
+            border-radius: 24px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -185,9 +217,9 @@
         }
 
         .history-icon {
-            font-size: 28px;
+            font-size: 30px;
             margin-bottom: 8px;
-            opacity: 0.6;
+            opacity: 0.5;
         }
 
         .history-text {
@@ -199,20 +231,20 @@
         .main-cta-btn {
             width: 100%;
             background: linear-gradient(135deg, #ffffff 0%, #d4d4d8 100%);
-            color: #0b0b0e;
+            color: #070709;
             border: none;
             padding: 16px;
-            border-radius: 20px;
-            font-size: 15px;
+            border-radius: 22px;
+            font-size: 16px;
             font-weight: 700;
             cursor: pointer;
             transition: opacity 0.2s, transform 0.2s;
-            box-shadow: 0 10px 25px rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 30px rgba(255, 255, 255, 0.12);
             text-align: center;
         }
 
         .main-cta-btn:hover {
-            opacity: 0.9;
+            opacity: 0.92;
             transform: scale(0.99);
         }
     </style>
@@ -220,21 +252,29 @@
 <body>
 
     <div class="app-container">
-        <!-- الهيدر -->
+        <!-- الهيدر مع اسم المنصة البارز Easy -->
         <div class="app-header">
             <button class="icon-btn">👤</button>
-            <div class="wallet-selector">
-                <span>Easy Main</span>
-                <span style="font-size: 12px; color: #71717a;">▼</span>
-            </div>
+            <div class="brand-title">Easy</div>
             <button class="icon-btn">⚙️</button>
         </div>
 
-        <!-- البطاقة البصرية الفخمة -->
+        <!-- شريط العملات والشبكات المتعددة -->
+        <div class="assets-bar">
+            <div class="asset-chip active">💎 USDT</div>
+            <div class="asset-chip">🔹 ETH</div>
+            <div class="asset-chip">🟡 BTC</div>
+            <div class="asset-chip">🟣 SOL</div>
+            <div class="asset-chip">🌐 TRC-20</div>
+        </div>
+
+        <!-- بطاقة المحفظة الفخمة -->
         <div class="crypto-card">
             <div class="card-top">
-                <span class="card-name">Main Account</span>
-                <span class="network-tag">● TRC-20</span>
+                <span class="card-name">Unified Vault</span>
+                <div class="networks-wrapper">
+                    <span class="network-tag">Multi-Chain</span>
+                </div>
             </div>
             <div class="balance-area">
                 <span class="balance-num">0.00</span>
@@ -242,7 +282,7 @@
             </div>
         </div>
 
-        <!-- أزرار الإرسال والاستلام -->
+        <!-- أزرار العمليات (Send / Receive) -->
         <div class="action-buttons">
             <div class="action-group">
                 <div class="action-circle">📥</div>
