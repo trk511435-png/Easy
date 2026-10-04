@@ -1,58 +1,72 @@
 const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 3000;
-
-// ضع رابط سيرفرك على ريندر هنا بعد ما تاخذه (مثال: https://your-app-name.onrender.com)
-const RENDER_URL = "https://easy-qrgz.onrender.com"; 
+const RENDER_URL = "https://easy-qrgz.onrender.com";
 
 app.use(express.json());
 
-// مسار رئيسي للتأكد أن السيرفر يعمل
+// محاكاة قاعدة بيانات مؤقتة (يُفضل استبدالها بـ MongoDB لاحقاً)
+let usersDatabase = [];
+
 app.get('/', (req, res) => {
-    res.send('Easy Wallet Server is running smoothly 🚀');
+    res.send('Easy Wallet Server is running with Database support 🚀');
 });
 
-// دالة توليد معرف المستخدم الأساسي: الاسم + 10 أرقام عشوائية
-function generateUserId(username) {
-    const randomNumbers = Math.floor(1000000000 + Math.random() * 9000000000);
-    return `${username}${randomNumbers}`;
-}
-
-// دالة توليد معرف الحساب الفرعي: all + 5 أرقام عشوائية
-function generateSubAccountId() {
-    const randomNumbers = Math.floor(10000 + Math.random() * 90000);
-    return `all${randomNumbers}`;
-}
-
-// مثال لمسار تجريبي لإنشاء حساب مستخدم جديد
+// مسار التسجيل (إنشاء حساب جديد لأول مرة)
 app.post('/api/register', (req, res) => {
-    const { username } = req.body;
-    if (!username) {
-        return res.status(400).json({ error: "Username is required" });
+    const { username, password } = req.body;
+    if (!username || !password) {
+        return res.status(400).json({ error: "الرجاء إدخال اسم المستخدم وكلمة المرور" });
     }
 
-    const userId = generateUserId(username);
-    const subAccountId = generateSubAccountId();
+    // التأكد إن المستخدم مش موجود مسبقاً
+    const existingUser = usersDatabase.find(u => u.username === username);
+    if (existingUser) {
+        return res.status(400).json({ error: "اسم المستخدم مستخدم بالفعل، جرب اسم آخر أو سجل دخولك" });
+    }
+
+    // توليد المعرفات الثابتة الخاصة بالمستخدم
+    const userId = `${username}${Math.floor(1000000000 + Math.random() * 9000000000)}`;
+    const subAccountId = `all${Math.floor(10000 + Math.random() * 90000)}`;
+
+    const newUser = {
+        username,
+        password, // ملاحظة: في الإنتاج الحقيقي يجب تشفير كلمة المرور باستخدام bcrypt
+        userId,
+        subAccountId,
+        balance: 12450.00
+    };
+
+    usersDatabase.push(newUser);
 
     res.json({
-        message: "User registered successfully",
-        userId: userId,
-        subAccountId: subAccountId
+        message: "تم إنشاء الحساب بنجاح",
+        userId: newUser.userId,
+        subAccountId: newUser.subAccountId,
+        balance: newUser.balance
     });
 });
 
-// تشغيل السيرفر
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+// مسار تسجيل الدخول (لو دخل من جهاز ثاني)
+app.post('/api/login', (req, res) => {
+    const { username, password } = req.body;
+    
+    const user = usersDatabase.find(u => u.username === username && u.password === password);
+    if (!user) {
+        return res.status(401).json({ error: "خطأ في اسم المستخدم أو كلمة المرور" });
+    }
 
-    // نظام الحفاظ على النشاط (Self-Ping كل 5 دقائق لمنع السيرفر من النوم على ريندر)
+    res.json({
+        message: "تم تسجيل الدخول بنجاح",
+        userId: user.userId,
+        subAccountId: user.subAccountId,
+        balance: user.balance
+    });
+});
+
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
     setInterval(async () => {
-        if (RENDER_URL.includes("YOUR_RENDER_APP_NAME")) return; // يتخطى الرابط الوهمي حتى تنشر السيرفر
-        try {
-            const response = await fetch(RENDER_URL);
-            console.log(`[Keep-Alive] Self-ping status: ${response.status}`);
-        } catch (error) {
-            console.error(`[Keep-Alive] Ping failed:`, error.message);
-        }
-    }, 5 * 60 * 1000); 
+        try { await fetch(RENDER_URL); } catch (e) {}
+    }, 5 * 60 * 1000);
 });
