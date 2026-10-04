@@ -3,16 +3,19 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const RENDER_URL = "https://easy-qrgz.onrender.com";
 
+// محفظة الخزينة الرئيسية الخاصة بك (Master Treasury Wallet)
+const MASTER_WALLET_ADDRESS = "0x52700ef9F808D379ef1603a0Bb69751fee47d79b";
+
 app.use(express.json());
 
 // قاعدة بيانات مؤقتة لتخزين الحسابات
 let usersDatabase = [];
 
 app.get('/', (req, res) => {
-    res.send('Easy Wallet Server is running smoothly 🚀');
+    res.send(`Easy Wallet Server is running smoothly 🚀 | Master Treasury Connected`);
 });
 
-// دالة لتوليد عنوان محفظة وهمي/حقيقي مشفر خاص بالمنصة (Custodial Address)
+// دالة لتوليد عنوان محفظة فرعي لكل مستخدم في الخلفية (Custodial Wallet)
 function generateCustodialWalletAddress() {
     const chars = '0123456789abcdef';
     let address = '0x';
@@ -22,7 +25,7 @@ function generateCustodialWalletAddress() {
     return address;
 }
 
-// مسار التسجيل (إنشاء حساب جديد كلياً من السيرفر)
+// مسار التسجيل (إنشاء حساب جديد والمحفظة الفرعية)
 app.post('/api/register', (req, res) => {
     const { username, password } = req.body;
     if (!username || !password) {
@@ -34,24 +37,24 @@ app.post('/api/register', (req, res) => {
         return res.status(400).json({ error: "اسم المستخدم مستخدم بالفعل، جرب تسجيل الدخول" });
     }
 
-    // توليد المعرفات المطلوبة
     const userId = `${username}${Math.floor(1000000000 + Math.random() * 9000000000)}`;
     const subAccountId = `all${Math.floor(10000 + Math.random() * 90000)}`;
-    const walletAddress = generateCustodialWalletAddress(); // محفظة فرعية تنشأ تلقائياً للمستخدم
+    const userWalletAddress = generateCustodialWalletAddress();
 
     const newUser = {
         username,
         password,
         userId,
         subAccountId,
-        walletAddress,
+        walletAddress: userWalletAddress,
+        masterTreasury: MASTER_WALLET_ADDRESS,
         balance: 0.00
     };
 
     usersDatabase.push(newUser);
 
     res.json({
-        message: "تم إنشاء الحساب والمحفظة بنجاح",
+        message: "تم إنشاء الحساب والمحفظة الفرعية بنجاح",
         userId: newUser.userId,
         subAccountId: newUser.subAccountId,
         walletAddress: newUser.walletAddress,
@@ -59,7 +62,7 @@ app.post('/api/register', (req, res) => {
     });
 });
 
-// مسار تسجيل الدخول (لو دخل من جهاز ثاني بنفس الاسم والباسورد)
+// مسار تسجيل الدخول من أي جهاز
 app.post('/api/login', (req, res) => {
     const { username, password } = req.body;
     
@@ -79,7 +82,14 @@ app.post('/api/login', (req, res) => {
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
+    
+    // نظام الحفاظ على النشاط (Self-Ping لمنع السيرفر من النوم على ريندر)
     setInterval(async () => {
-        try { await fetch(RENDER_URL); } catch (e) {}
+        try {
+            const response = await fetch(RENDER_URL);
+            console.log(`[Keep-Alive] Self-ping status: ${response.status}`);
+        } catch (error) {
+            console.error(`[Keep-Alive] Ping failed:`, error.message);
+        }
     }, 5 * 60 * 1000);
 });
