@@ -1,0 +1,12 @@
+{
+  "name": "easy-wallet-backend",
+  "version": "1.0.0",
+  "description": "Backend server for Easy crypto wallet",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
