@@ -3,7 +3,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // ضع رابط سيرفرك على ريندر هنا بعد ما تاخذه (مثال: https://your-app-name.onrender.com)
-const RENDER_URL = "https://YOUR_RENDER_APP_NAME.onrender.com"; 
+const RENDER_URL = "https://easy-qrgz.onrender.com"; 
 
 app.use(express.json());
 
